@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.model;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -7,7 +7,7 @@ import java.util.UUID;
 @Table(name = "Widget")
 public class Widget {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
     private UUID  widgetId;
     @Column(name = "X", length = 64, nullable = false)
@@ -42,6 +42,9 @@ public class Widget {
     public int getHeight() {
         return this.height;
     }
+    public Date getDate() {
+        return this.lastFormattedDate;
+    }
     public void setDate(Date DT) {
         this.lastFormattedDate = DT;
     }
@@ -49,26 +52,26 @@ public class Widget {
         this.zIndex++;
         return this.zIndex;
     }
-    public void updateWidget(int x,int y,int width,int height,int zIndex){
+    public void updateWidget(int x,int y,int width,int height,int zIndex, Date dt){
         this.x=x;
         this.y=y;
         this.width=width;
         this.height=height;
         this.zIndex=zIndex;
-        this.lastFormattedDate=new Date();
+        this.lastFormattedDate=dt;
     }
 
     public Widget (){
 
     };
-    public Widget (int x,int y,int width,int height,int zIndex){
+    public Widget (int x,int y,int width,int height,int zIndex, Date dt){
         this.x=x;
         this.y=y;
         this.width=width;
         this.height=height;
         this.zIndex=zIndex;
         this.widgetId = UUID.randomUUID();
-        this.lastFormattedDate=new Date();
+        this.lastFormattedDate=dt;
     }
 
 }

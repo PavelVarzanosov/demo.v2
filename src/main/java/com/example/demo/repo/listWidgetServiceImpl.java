@@ -1,98 +1,89 @@
 package com.example.demo.repo;
 
-import com.example.demo.Widget;
-import com.example.demo.interfaces.IH2;
-import com.example.demo.interfaces.IWidget;
+import com.example.demo.model.Widget;
+import com.example.demo.interfaces.IWidgetService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
-
-public class h2Repo implements IWidget{
-    //private LinkedList<Widget> widgetList;
-    private IH2 h2Repo;
-    public h2Repo() {
-        //LinkedList<Widget> widgetList = new LinkedList<Widget>();
+@Service
+@Component("listImpl")
+public class listWidgetServiceImpl implements IWidgetService {
+    private LinkedList<Widget> widgetList;
+    @Autowired
+    public listWidgetServiceImpl() {
+        LinkedList<Widget> widgetList = new LinkedList<Widget>();
     }
 
     public Widget save(int x, int y, int width, int height, int zIndex) {
 
         final Widget widget;
-        List<Widget> widgetList = StreamSupport.stream(h2Repo.findAll().spliterator(), false).collect(Collectors.toList());
         if (widgetList.stream().anyMatch((w) -> w.getZIndex() == zIndex))
         {
             widgetList.stream().filter((w) -> w.getZIndex() >=zIndex)
                     .map((w) -> w.incZIndex())
                     .collect(Collectors.toList());
-            h2Repo.saveAll(widgetList);
         }
-        else {
-
-        }
-        widget = new Widget(x,y,width,height,zIndex);
-        h2Repo.save(widget);
+        widget = new Widget(x,y,width,height,zIndex,new Date());
+        widgetList.add(widget);
         return widget;
     }
 
     public Widget save(int x,int y,int width,int height) {
 
         final Widget widget;
-        List<Widget> widgetList = StreamSupport.stream(h2Repo.findAll().spliterator(), false).collect(Collectors.toList());
         int zIndex = widgetList.stream()
                 .max(Comparator.comparingInt(Widget::getZIndex))
                 .get()
                 .getZIndex();
-        widget = new Widget(x,y,width,height,zIndex+1);
-        h2Repo.save(widget);
+        widget = new Widget(x,y,width,height,zIndex+1,new Date());
+        widgetList.add(widget);
         return widget;
     }
 
     public Widget findById(UUID id) {
 
-        Widget widget = h2Repo.findById(id).orElse(new Widget());//какая логика должна быть?
-       return widget;
+        final Widget widget;
+        widget = widgetList.stream().filter((w) -> w.getWidgetId().equals(id)).findFirst().get();//не лучший вариант
+        return widget;
     }
 
     public Widget updateWidget(Widget widget) {
 
-        //Widget fWidget = widget;
-        List<Widget> widgetList = StreamSupport.stream(h2Repo.findAll().spliterator(), false).collect(Collectors.toList());
-        if (widgetList.stream().anyMatch((w) -> w.getZIndex() == widget.getZIndex()))
-        {
-            widgetList.stream().filter((w) -> w.getZIndex() >=widget.getZIndex())
-                    .map((w) -> w.incZIndex());
-            h2Repo.saveAll(widgetList);
+        Widget fWidget = widget;
+        if(widgetList.stream().anyMatch((w) -> w.getWidgetId().equals(widget.getWidgetId()))) {
+            if (widgetList.stream().anyMatch((w) -> w.getZIndex() == fWidget.getZIndex())) {
+                widgetList.stream().filter((w) -> w.getZIndex() >= fWidget.getZIndex())
+                        .map((w) -> w.incZIndex());
+            }
+            widgetList.stream()
+                    .filter((w) -> w.getWidgetId().equals(fWidget.getWidgetId()))
+                    .findFirst()
+                    .get()
+                    .updateWidget(fWidget.getX(), fWidget.getY(), fWidget.getWidth(), fWidget.getHeight(), fWidget.getZIndex(), new Date());
+            return fWidget;
         }
-        Widget fWidget = widgetList.stream()
-                .filter((w) -> w.getWidgetId() == widget.getWidgetId())
-                .findFirst()//что, если такого виджета нет?
-                .get();
-        fWidget.setDate(new Date());
-        h2Repo.save(fWidget);
-        return fWidget;
+        return null;
     }
 
     public void deleteById(UUID  id) {
 
-        h2Repo.deleteById(id);
+        Widget deleteWidget = widgetList.stream().filter((w) -> w.getWidgetId().equals(id)).findFirst().get();
+        widgetList.remove(deleteWidget);
+    }
+    public void deleteAll() {
+        widgetList = new LinkedList<Widget>();;
     }
 
     public List<Widget> getWidgetListSorted() {
 
-        List<Widget> widgetList = StreamSupport
-                .stream(h2Repo.findAll().spliterator(), false)
-                .sorted(Comparator.comparingInt(Widget::getZIndex))
-                .collect(Collectors.toList());
-
-        return widgetList;
+        return widgetList.stream().sorted(Comparator.comparingInt(Widget::getZIndex)).collect(Collectors.toList());
     }
     //Запрос с пагинацией, никак не учитывает ситуацию, что между запросами от пользователя список виджетов мог измениться
+
     public List<Widget> getWidgetListSorted(int offset, int limit) {
-        List<Widget> widgetList = StreamSupport.stream(h2Repo.findAll().spliterator(), false)
-                .collect(Collectors.toList());
         //вернем пустой список, если offset больше количества виджетов
         List<Widget> widgetListSort = (offset > widgetList.size()) ? new LinkedList<Widget>() :
                 widgetList.stream()
@@ -103,11 +94,8 @@ public class h2Repo implements IWidget{
         return widgetListSort;
     }
     //область
-
-    public List<Widget> getWidgetListSorted(int x1, int y1, int x2, int y2) {
+    public List<Widget> getWidgetListSorted(int x1, int x2, int y1, int y2) {
         List<Widget> widgetListSort;
-        List<Widget> widgetList = StreamSupport.stream(h2Repo.findAll().spliterator(), false)
-                .collect(Collectors.toList());
         final int xMin;
         final int xMax;
         final int yMin;
@@ -133,7 +121,7 @@ public class h2Repo implements IWidget{
                 .sorted(Comparator.comparingInt(Widget::getZIndex))
                 .filter((w) ->
                         (w.getX()-w.getWidth()/2 >= xMin) && (w.getX()+w.getWidth()/2 <= xMax)
-                                && (w.getX()-w.getHeight()/2 >= yMin) && (w.getX()+w.getHeight()/2 <= yMax))
+                                && (w.getY()-w.getHeight()/2 >= yMin) && (w.getY()+w.getHeight()/2 <= yMax))
                 .collect(Collectors.toList());
         return widgetListSort;
     }

@@ -1,38 +1,51 @@
 package com.example.demo.controllers;
 
-import com.example.demo.Properties;
-import com.example.demo.Widget;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.example.demo.model.PropList;
+import com.example.demo.model.Properties;
+import com.example.demo.model.Widget;
+import com.example.demo.rateLimit.SimpleRateLimiter;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
+@RestController
+@RequestMapping("/rateLimit")
 public class RateLimitController {
-    private final String sharedKey = "SHARED_KEY";
-
+    private PropList propList = new PropList();;
     public RateLimitController() {
+
     }
 
-    @PostMapping("/updateRateLimit")
-    public void updateRateLimit(@RequestBody String type, int rateLimit ) {
-        Properties prop = new Properties();
-        switch(type) {
-            case "rateLimitForSave":
-                prop.setRateLimitForSave(rateLimit);
-                break;
-            case "rateLimitForUpdate":
-                prop.setRateLimitForUpdate(rateLimit);
-                break;
-            case "rateLimitForDelete":
-                prop.setRateLimitForDelete(rateLimit);
-                break;
-            case "rateLimitForGetList":
-                prop.setRateLimitForGetList(rateLimit);
-                break;
-            default: break;
+    @PostMapping("/addOrUpdateRateLimit")
+    public ResponseEntity<Properties> addOrUpdateRateLimit(@RequestParam String contextPath, int rateLimit ) {
+
+        if(propList.getProps()
+                .stream()
+                .filter((w) -> w.getPath().equals(contextPath))
+                .findAny()
+                .isPresent())
+        {
+            propList.getProps()
+                    .stream()
+                    .filter((w) -> w.getPath().equals(contextPath))
+                    .findAny()
+                    .get()
+                    .setRateLimit(rateLimit);
+            return ResponseEntity.noContent().build();
+        } else
+        {
+            SimpleRateLimiter rateLimiter = SimpleRateLimiter.create(rateLimit, TimeUnit.MINUTES);
+            Properties prop = new Properties(contextPath, rateLimit, rateLimiter);
+            propList.addProp(prop);
+            return ResponseEntity.ok(prop);
         }
     }
 
+    @GetMapping("/getRateLimits")
+    public ResponseEntity<List<Properties>> getProps() {
+
+        List<Properties> props = propList.getProps();
+        return ResponseEntity.ok(props);
+    }
 }

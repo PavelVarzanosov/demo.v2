@@ -1,12 +1,12 @@
 package com.example.demo.interfaces;
 
-import com.example.demo.Widget;
+import com.example.demo.model.Widget;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
 @Repository
-public interface IH2
+public interface IRepository
         extends CrudRepository<Widget, UUID> {
 }
