@@ -14,12 +14,13 @@ import java.util.stream.StreamSupport;
 @Component("h2Impl")
 public class h2WidgetServiceImpl implements IWidgetService {
 
-    private final IRepository h2Rep;
-
     @Autowired
-    public h2WidgetServiceImpl(IRepository iRepository) {
-        this.h2Rep = iRepository;
-    }
+    private IRepository h2Rep;
+
+//    @Autowired
+//    public h2WidgetServiceImpl(IRepository iRepository) {
+//        this.h2Rep = iRepository;
+//    }
 
 
     public Widget save(int x, int y, int width, int height, int zIndex) {
@@ -81,21 +82,14 @@ public class h2WidgetServiceImpl implements IWidgetService {
 
        if(widgetList.stream().anyMatch((w) -> w.getWidgetId().equals(widget.getWidgetId())))
         {
-            //System.out.println("there is my widget " + widget.getWidgetId());
             if (widgetList.stream().anyMatch((w) -> w.getZIndex() == widget.getZIndex()))
             {
                 widgetList.stream().filter((w) -> w.getZIndex() >=widget.getZIndex())
                         .map((w) -> w.incZIndex());
                 h2Rep.saveAll(widgetList);
             }
-            Widget fWidget = widgetList.stream()
-                    .filter((w) -> w.getWidgetId().equals(widget.getWidgetId()))
-                    .findAny()
-                    .get();
 
-            h2Rep.save(fWidget);
-            //widgetL = h2Rep.findAll();
-            //widgetL.forEach(widget1 -> System.out.println("w save " + widget1.getWidgetId() + " " + widget1.getZIndex()));
+            Widget fWidget = h2Rep.save(widget);
             return fWidget;
         }
         return null;

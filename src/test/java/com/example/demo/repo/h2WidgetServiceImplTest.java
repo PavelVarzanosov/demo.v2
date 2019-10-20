@@ -97,10 +97,9 @@ public class h2WidgetServiceImplTest {
         //обновляем виджет изменяя параметры
         widgetCreate.updateWidget(2,3,4,5,6,dt);
         Widget updateWidget = h2Rep.updateWidget(widgetCreate);
-        System.out.println(updateWidget.getWidgetId());
-        Assert.assertNotEquals(widgetCreate.getZIndex(), updateWidget.getZIndex());
-        Assert.assertNotEquals(widgetCreate.getHeight(), updateWidget.getHeight());
-        Assert.assertNotEquals(widgetCreate.getWidth(), updateWidget.getWidth());
+        Assert.assertNotEquals(5, updateWidget.getZIndex());
+        Assert.assertNotEquals(4, updateWidget.getHeight());
+        Assert.assertNotEquals(3, updateWidget.getWidth());
     }
 
 //    @Test

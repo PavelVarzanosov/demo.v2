@@ -48,6 +48,24 @@ public class Widget {
     public void setDate(Date DT) {
         this.lastFormattedDate = DT;
     }
+    public void setWidgetId(UUID id) {
+        this.widgetId = id;
+    }
+    public void setZIndex(int zIndex) {
+        this.zIndex = zIndex;
+    }
+    public void setX(int x) {
+        this.x = x;
+    }
+    public void setY(int y) {
+        this.y = y;
+    }
+    public void setWidth(int width) {
+        this.width = width;
+    }
+    public void setHeight(int height) {
+        this.height = height;
+    }
     public int incZIndex() {
         this.zIndex++;
         return this.zIndex;

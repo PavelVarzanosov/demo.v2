@@ -44,19 +44,14 @@ public class SimpleRateLimiter {
     }
 
     public void schedulePermitReplenishment() {
-        System.out.println("schedule");
+        //System.out.println("schedule");
         scheduler = Executors.newScheduledThreadPool(1);
         startSchedulerTime = System.currentTimeMillis();
         scheduler.scheduleAtFixedRate(() -> {
-            System.out.println("into schedule " + maxPermits + " " + semaphore.availablePermits());
+            //System.out.println("into schedule " + maxPermits + " " + semaphore.availablePermits());
             semaphore.release(maxPermits - semaphore.availablePermits());//освобождаем потоки через указанное время
             startSchedulerTime = System.currentTimeMillis();
         }, 1,1, timePeriod);
-//            scheduler.schedule(() -> {
-//                System.out.println("into schedule " + maxPermits + " " + semaphore.availablePermits());
-//                semaphore.release(maxPermits - semaphore.availablePermits());//освобождаем потоки через указанное время
-//                startSchedulerTime = System.currentTimeMillis();
-//            }, 1, timePeriod);
 
     }
 }

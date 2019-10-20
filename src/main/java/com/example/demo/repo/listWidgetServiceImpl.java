@@ -11,58 +11,72 @@ import java.util.stream.Collectors;
 @Service
 @Component("listImpl")
 public class listWidgetServiceImpl implements IWidgetService {
+
     private LinkedList<Widget> widgetList;
     @Autowired
     public listWidgetServiceImpl() {
-        LinkedList<Widget> widgetList = new LinkedList<Widget>();
+        widgetList = new LinkedList<Widget>();
+        Widget w = new Widget(100,100,30,10,5,new Date());
+        widgetList.add(w);
+        w = new Widget(-10, 10, 20, 10, 10,new Date());
+        widgetList.add(w);
+        w = new Widget(10, -10, 10, 20, 20,new Date());
+        widgetList.add(w);
+        w = new Widget(-10, -10, 30, 30, 30,new Date());
+        widgetList.add(w);
     }
 
     public Widget save(int x, int y, int width, int height, int zIndex) {
 
-        final Widget widget;
         if (widgetList.stream().anyMatch((w) -> w.getZIndex() == zIndex))
         {
             widgetList.stream().filter((w) -> w.getZIndex() >=zIndex)
                     .map((w) -> w.incZIndex())
                     .collect(Collectors.toList());
         }
-        widget = new Widget(x,y,width,height,zIndex,new Date());
+        Widget widget = new Widget(x,y,width,height,zIndex,new Date());
         widgetList.add(widget);
         return widget;
     }
 
     public Widget save(int x,int y,int width,int height) {
 
-        final Widget widget;
-        int zIndex = widgetList.stream()
+        int zIndex = 0;
+        zIndex = widgetList.stream()
                 .max(Comparator.comparingInt(Widget::getZIndex))
                 .get()
                 .getZIndex();
-        widget = new Widget(x,y,width,height,zIndex+1,new Date());
+        Widget widget = new Widget(x,y,width,height,zIndex+1,new Date());
         widgetList.add(widget);
         return widget;
     }
 
     public Widget findById(UUID id) {
 
-        final Widget widget;
-        widget = widgetList.stream().filter((w) -> w.getWidgetId().equals(id)).findFirst().get();//не лучший вариант
+        Widget widget = widgetList.stream().filter((w) -> w.getWidgetId().equals(id)).findFirst().get();//не лучший вариант
         return widget;
     }
 
     public Widget updateWidget(Widget widget) {
 
-        Widget fWidget = widget;
+        System.out.println("update " + widget.getZIndex());
         if(widgetList.stream().anyMatch((w) -> w.getWidgetId().equals(widget.getWidgetId()))) {
-            if (widgetList.stream().anyMatch((w) -> w.getZIndex() == fWidget.getZIndex())) {
-                widgetList.stream().filter((w) -> w.getZIndex() >= fWidget.getZIndex())
+            if (widgetList.stream().anyMatch((w) -> w.getZIndex() == widget.getZIndex())) {
+                widgetList.stream().filter((w) -> w.getZIndex() >= widget.getZIndex())
                         .map((w) -> w.incZIndex());
             }
+            System.out.println("update 2 " + widget.getZIndex());
             widgetList.stream()
-                    .filter((w) -> w.getWidgetId().equals(fWidget.getWidgetId()))
+                    .filter((w) -> w.getWidgetId().equals(widget.getWidgetId()))
                     .findFirst()
                     .get()
-                    .updateWidget(fWidget.getX(), fWidget.getY(), fWidget.getWidth(), fWidget.getHeight(), fWidget.getZIndex(), new Date());
+                    .updateWidget(widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.getZIndex(), new Date());
+
+            Widget fWidget = widgetList.stream()
+                    .filter((w) -> w.getWidgetId().equals(widget.getWidgetId()))
+                    .findFirst()
+                    .get();
+            System.out.println("update 3 " + fWidget.getZIndex());
             return fWidget;
         }
         return null;

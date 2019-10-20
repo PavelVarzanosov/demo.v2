@@ -1,62 +1,48 @@
 package com.example.demo.controllers;
 
-import com.example.demo.interfaces.IRepository;
-import com.example.demo.rateLimit.SimpleRateLimiter;
 import com.example.demo.model.Widget;
 import com.example.demo.interfaces.IWidgetService;
-import com.example.demo.repo.h2WidgetServiceImpl;
-import com.example.demo.repo.listWidgetServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.FileInputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-//@EnableConfigurationProperties({Properties.class})
 @RestController
 @RequestMapping("/widget")
 public class WidgetController {
 
-    @Value("${spring.isInMemoryStorage}")
-    private boolean isInMemoryStorage;
-
-    //private SimpleRateLimiter SRL1;
-    @Value("${spring.baseRateLimit}")
-    private int rateLimit;
-    private final IWidgetService db;
+    private IWidgetService db;
     private final static Logger LOGGER = Logger.getLogger(WidgetController.class.getName());
-
     @Autowired
-    public WidgetController(@Qualifier("listImpl") IWidgetService dbH2, @Qualifier("h2Impl") IWidgetService dbList) {
-        //this.db = db;
-        //System.out.println("widget controller");
-        this.db = (isInMemoryStorage) ? dbH2 : dbList;
+    public WidgetController(@Qualifier("h2Impl") IWidgetService dbH2
+            , @Qualifier("listImpl") IWidgetService dbList
+            , @Value("${spring.isInMemoryStorage}") String isInMemoryStorage) {
+        //this.db = dbH2;
+        System.out.println("isMem " + isInMemoryStorage);
+        this.db = (isInMemoryStorage.equals("true")) ? dbH2 : dbList;
     }
     @PostMapping("/newWidgetWithZIndex")
     public ResponseEntity<Widget> newWidget(@RequestParam int x, int y, int width, int height, int zIndex) {
 
-        final Widget widget;
         try {
-            widget =db.save(x, y, width, height, zIndex);
+            Widget widget =db.save(x, y, width, height, zIndex);
             return ResponseEntity.ok(widget);
         } catch (Exception e) {
             LOGGER.info(e.getMessage());
             return ResponseEntity.badRequest().build();
-            //return ResponseEntity.ok(e.getMessage());
         }
     }
     @PostMapping("/newWidget")
     public ResponseEntity<Widget> newWidget(@RequestParam  int x,int y,int width,int height) {
 
-        final Widget widget;
         try {
-            widget =db.save(x, y, width, height);
+            Widget widget =db.save(x, y, width, height);
             return ResponseEntity.ok(widget);
         } catch (Exception e) {
             LOGGER.info(e.getMessage());
@@ -66,9 +52,8 @@ public class WidgetController {
     @GetMapping("{id}")
     public ResponseEntity<Widget> getWidgetById(@PathVariable  UUID id) {
 
-        final Widget widget;
         try {
-            widget = db.findById(id);
+            Widget widget = db.findById(id);
             return ResponseEntity.ok(widget);
         } catch (Exception e) {
             LOGGER.info(e.getMessage());
@@ -76,11 +61,18 @@ public class WidgetController {
         }
     }
     @PostMapping("/updateWidget")
-    public ResponseEntity<Widget> updateWidget(@RequestParam  Widget widget) {
-
-        Widget fWidget = widget;
+    public ResponseEntity<Widget> updateWidget(@RequestParam UUID id, int x, int y, int width, int height, int zIndex) {
+    //public ResponseEntity<Widget> updateWidget(@RequestBody Widget widget){ //не приходит поле zIndex объекта widget
+        Widget widget = new Widget();
+        widget.setWidgetId(id);
+        widget.setDate(new Date());
+        widget.setX(x);
+        widget.setY(y);
+        widget.setWidth(width);
+        widget.setHeight(height);
+        widget.setZIndex(zIndex);
         try {
-            fWidget = db.updateWidget(widget);
+            Widget fWidget = db.updateWidget(widget);
             return ResponseEntity.ok(fWidget);
         } catch (Exception e) {
             LOGGER.info(e.getMessage());
