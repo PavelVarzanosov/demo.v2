@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/rateLimit")
@@ -19,19 +20,11 @@ public class RateLimitController {
 
     @PostMapping("/addOrUpdateRateLimit")
     public ResponseEntity<Properties> addOrUpdateRateLimit(@RequestParam String contextPath, int rateLimit ) {
+        Optional<Properties> propOrNull = propList.getProps().stream().filter((w) -> w.getPath().equals(contextPath)).findAny();
 
-        if(propList.getProps()
-                .stream()
-                .filter((w) -> w.getPath().equals(contextPath))
-                .findAny()
-                .isPresent())
+        if(propOrNull.isPresent())
         {
-            propList.getProps()
-                    .stream()
-                    .filter((w) -> w.getPath().equals(contextPath))
-                    .findAny()
-                    .get()
-                    .setRateLimit(rateLimit);
+            propOrNull.get().setRateLimit(rateLimit);
             return ResponseEntity.noContent().build();
         } else
         {
@@ -44,7 +37,6 @@ public class RateLimitController {
 
     @GetMapping("/getRateLimits")
     public ResponseEntity<List<Properties>> getProps() {
-
         List<Properties> props = propList.getProps();
         return ResponseEntity.ok(props);
     }

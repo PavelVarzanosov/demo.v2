@@ -12,8 +12,6 @@ public class Properties {
         this.rateLimit=rateLimit;
         this.limiter=limiter;
     }
-    public Properties () {
-    }
     public int getRateLimit() {
         return rateLimit;
     }
@@ -25,8 +23,5 @@ public class Properties {
     }
     public SimpleRateLimiter getRateLimiter() {
         return limiter;
-    }
-    public void setRateLimiter(SimpleRateLimiter limiter) {
-        this.limiter = limiter;
     }
 }

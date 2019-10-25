@@ -23,31 +23,19 @@ public class WidgetController {
     public WidgetController(@Qualifier("h2Impl") IWidgetService dbH2
             , @Qualifier("listImpl") IWidgetService dbList
             , @Value("${spring.isInMemoryStorage}") String isInMemoryStorage) {
-        //this.db = dbH2;
-        System.out.println("isMem " + isInMemoryStorage);
         this.db = (isInMemoryStorage.equals("true")) ? dbH2 : dbList;
     }
     @PostMapping("/newWidgetWithZIndex")
     public ResponseEntity<Widget> newWidget(@RequestParam int x, int y, int width, int height, int zIndex) {
 
-        try {
-            Widget widget =db.save(x, y, width, height, zIndex);
-            return ResponseEntity.ok(widget);
-        } catch (Exception e) {
-            LOGGER.info(e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+        Widget widget =db.save(x, y, width, height, zIndex);
+        return ResponseEntity.ok(widget);
     }
     @PostMapping("/newWidget")
     public ResponseEntity<Widget> newWidget(@RequestParam  int x,int y,int width,int height) {
 
-        try {
-            Widget widget =db.save(x, y, width, height);
-            return ResponseEntity.ok(widget);
-        } catch (Exception e) {
-            LOGGER.info(e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+        Widget widget =db.save(x, y, width, height);
+        return ResponseEntity.ok(widget);
     }
     @GetMapping("{id}")
     public ResponseEntity<Widget> getWidgetById(@PathVariable  UUID id) {
@@ -60,7 +48,7 @@ public class WidgetController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PostMapping("/updateWidget")
+    @PutMapping("/updateWidget")
     public ResponseEntity<Widget> updateWidget(@RequestParam UUID id, int x, int y, int width, int height, int zIndex) {
     //public ResponseEntity<Widget> updateWidget(@RequestBody Widget widget){ //не приходит поле zIndex объекта widget
         Widget widget = new Widget();
@@ -98,14 +86,14 @@ public class WidgetController {
         return ResponseEntity.ok(fWidgetList);
     }
     //Запрос с пагинацией, никак не учитывает ситуацию, что между запросами от пользователя список виджетов мог измениться
-    @PostMapping("/getWidgetsWithLimit")
+    @GetMapping("/getWidgetsWithLimit")
     public ResponseEntity<List<Widget>>  getWidgetListSorted(@RequestParam int offset, int limit) {
         //вернем пустой список, если offset больше количества виджетов
         List<Widget> widgetListSort = db.getWidgetListSorted(offset,limit);
         return ResponseEntity.ok(widgetListSort);
     }
     //область
-    @PostMapping("/getWidgetsByArea")
+    @GetMapping("/getWidgetsByArea")
     public ResponseEntity<List<Widget>>  getWidgetListSorted(@RequestParam int x1, int x2, int y1, int y2) {
         List<Widget> widgetListSort =  db.getWidgetListSorted(x1,x2,y1,y2);
         return ResponseEntity.ok(widgetListSort);

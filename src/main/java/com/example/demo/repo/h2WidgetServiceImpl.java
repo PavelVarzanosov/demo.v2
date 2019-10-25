@@ -16,21 +16,14 @@ public class h2WidgetServiceImpl implements IWidgetService {
 
     @Autowired
     private IRepository h2Rep;
-
-//    @Autowired
-//    public h2WidgetServiceImpl(IRepository iRepository) {
-//        this.h2Rep = iRepository;
-//    }
-
-
     public Widget save(int x, int y, int width, int height, int zIndex) {
 
         final Widget widget;
         Iterable<Widget> widgetL = h2Rep.findAll();
-        //widgetL.forEach(widget1 -> System.out.println("w " + widget1.getWidgetId()));
         if(widgetL != null) {
             List<Widget> widgetList = StreamSupport
                     .stream(widgetL.spliterator(), false)
+                    //.filter()
                     .collect(Collectors.toList());
             if (widgetList
                     .stream()
@@ -39,17 +32,13 @@ public class h2WidgetServiceImpl implements IWidgetService {
                 widgetList.stream().filter((w) -> w.getZIndex() >=zIndex)
                         .map((w) -> w.incZIndex())
                         .collect(Collectors.toList());
-               // widgetList.forEach(widget1 -> System.out.println("w3 " + widget1.getZIndex()));
                 h2Rep.saveAll(widgetList);
             }
         }
         widget = new Widget(x,y,width,height,zIndex, new Date());
         h2Rep.save(widget);
-        //widgetL = h2Rep.findAll();
-        //widgetL.forEach(widget1 -> System.out.println("w save " + widget1.getWidgetId() + " " + widget1.getZIndex()));
         return widget;
     }
-
     public Widget save(int x,int y,int width,int height) {
 
         final Widget widget;
@@ -68,13 +57,11 @@ public class h2WidgetServiceImpl implements IWidgetService {
         //widgetL.forEach(widget1 -> System.out.println("w save " + widget1.getWidgetId() + " " + widget1.getZIndex()));
         return widget;
     }
-
     public Widget findById(UUID id) {
 
         Widget widget = h2Rep.findById(id).get();//какая логика должна быть?
        return widget;
     }
-
     public Widget updateWidget(Widget widget) {
 
         Iterable<Widget> widgetL = h2Rep.findAll();
@@ -94,7 +81,6 @@ public class h2WidgetServiceImpl implements IWidgetService {
         }
         return null;
     }
-
     public void deleteById(UUID  id) {
 
         h2Rep.deleteById(id);
@@ -103,7 +89,6 @@ public class h2WidgetServiceImpl implements IWidgetService {
 
         h2Rep.deleteAll();
     }
-
     public List<Widget> getWidgetListSorted() {
 
         List<Widget> widgetList = StreamSupport
@@ -113,7 +98,6 @@ public class h2WidgetServiceImpl implements IWidgetService {
 
         return widgetList;
     }
-    //Запрос с пагинацией, никак не учитывает ситуацию, что между запросами от пользователя список виджетов мог измениться
     public List<Widget> getWidgetListSorted(int offset, int limit) {
         List<Widget> widgetList = StreamSupport.stream(h2Rep.findAll().spliterator(), false)
                 .collect(Collectors.toList());
@@ -126,8 +110,6 @@ public class h2WidgetServiceImpl implements IWidgetService {
                         .collect(Collectors.toList());
         return widgetListSort;
     }
-    //область
-
     public List<Widget> getWidgetListSorted(int x1, int x2, int y1, int y2) {
         List<Widget> widgetListSort;
         Iterable<Widget> widgetL = h2Rep.findAll();

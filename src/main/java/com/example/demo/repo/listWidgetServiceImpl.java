@@ -25,7 +25,6 @@ public class listWidgetServiceImpl implements IWidgetService {
         w = new Widget(-10, -10, 30, 30, 30,new Date());
         widgetList.add(w);
     }
-
     public Widget save(int x, int y, int width, int height, int zIndex) {
 
         if (widgetList.stream().anyMatch((w) -> w.getZIndex() == zIndex))
@@ -38,7 +37,6 @@ public class listWidgetServiceImpl implements IWidgetService {
         widgetList.add(widget);
         return widget;
     }
-
     public Widget save(int x,int y,int width,int height) {
 
         int zIndex = 0;
@@ -50,22 +48,18 @@ public class listWidgetServiceImpl implements IWidgetService {
         widgetList.add(widget);
         return widget;
     }
-
     public Widget findById(UUID id) {
 
-        Widget widget = widgetList.stream().filter((w) -> w.getWidgetId().equals(id)).findFirst().get();//не лучший вариант
+        Widget widget = widgetList.stream().filter((w) -> w.getWidgetId().equals(id)).findFirst().get();
         return widget;
     }
-
     public Widget updateWidget(Widget widget) {
 
-        System.out.println("update " + widget.getZIndex());
         if(widgetList.stream().anyMatch((w) -> w.getWidgetId().equals(widget.getWidgetId()))) {
             if (widgetList.stream().anyMatch((w) -> w.getZIndex() == widget.getZIndex())) {
                 widgetList.stream().filter((w) -> w.getZIndex() >= widget.getZIndex())
                         .map((w) -> w.incZIndex());
             }
-            System.out.println("update 2 " + widget.getZIndex());
             widgetList.stream()
                     .filter((w) -> w.getWidgetId().equals(widget.getWidgetId()))
                     .findFirst()
@@ -76,12 +70,10 @@ public class listWidgetServiceImpl implements IWidgetService {
                     .filter((w) -> w.getWidgetId().equals(widget.getWidgetId()))
                     .findFirst()
                     .get();
-            System.out.println("update 3 " + fWidget.getZIndex());
             return fWidget;
         }
         return null;
     }
-
     public void deleteById(UUID  id) {
 
         Widget deleteWidget = widgetList.stream().filter((w) -> w.getWidgetId().equals(id)).findFirst().get();
@@ -90,15 +82,11 @@ public class listWidgetServiceImpl implements IWidgetService {
     public void deleteAll() {
         widgetList = new LinkedList<Widget>();;
     }
-
     public List<Widget> getWidgetListSorted() {
 
         return widgetList.stream().sorted(Comparator.comparingInt(Widget::getZIndex)).collect(Collectors.toList());
     }
-    //Запрос с пагинацией, никак не учитывает ситуацию, что между запросами от пользователя список виджетов мог измениться
-
     public List<Widget> getWidgetListSorted(int offset, int limit) {
-        //вернем пустой список, если offset больше количества виджетов
         List<Widget> widgetListSort = (offset > widgetList.size()) ? new LinkedList<Widget>() :
                 widgetList.stream()
                         .sorted(Comparator.comparingInt(Widget::getZIndex))
@@ -107,14 +95,12 @@ public class listWidgetServiceImpl implements IWidgetService {
                         .collect(Collectors.toList());
         return widgetListSort;
     }
-    //область
     public List<Widget> getWidgetListSorted(int x1, int x2, int y1, int y2) {
         List<Widget> widgetListSort;
         final int xMin;
         final int xMax;
         final int yMin;
         final int yMax;
-        //определим минимальные максимальные точки по осям
         if( x1 > x2 ){
             xMin = x2;
             xMax = x1;

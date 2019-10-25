@@ -7,7 +7,6 @@ import java.util.UUID;
 @Table(name = "Widget")
 public class Widget {
     @Id
-    //@GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
     private UUID  widgetId;
     @Column(name = "X", length = 64, nullable = false)
