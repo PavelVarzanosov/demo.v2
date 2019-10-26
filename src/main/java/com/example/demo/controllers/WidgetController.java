@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -48,17 +47,9 @@ public class WidgetController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PutMapping("/updateWidget")
-    public ResponseEntity<Widget> updateWidget(@RequestParam UUID id, int x, int y, int width, int height, int zIndex) {
-    //public ResponseEntity<Widget> updateWidget(@RequestBody Widget widget){ //не приходит поле zIndex объекта widget
-        Widget widget = new Widget();
-        widget.setWidgetId(id);
-        widget.setDate(new Date());
-        widget.setX(x);
-        widget.setY(y);
-        widget.setWidth(width);
-        widget.setHeight(height);
-        widget.setZIndex(zIndex);
+    public ResponseEntity<Widget> updateWidget(@RequestBody Widget widget){ //не приходит поле zIndex объекта widget
         try {
             Widget fWidget = db.updateWidget(widget);
             return ResponseEntity.ok(fWidget);
@@ -76,8 +67,6 @@ public class WidgetController {
             LOGGER.info(e.getMessage());
             return ResponseEntity.notFound().build();
         }
-        //тут тоже может быть разная логика,или вовзращаем, что этого элемента нет (независимо от того, был ли он)
-        // или нужно показать, что его не было
     }
     @GetMapping("/getWidgetsSorted")
     public ResponseEntity<List<Widget>> getWidgetListSorted() {
@@ -85,14 +74,11 @@ public class WidgetController {
         List<Widget> fWidgetList = db.getWidgetListSorted();
         return ResponseEntity.ok(fWidgetList);
     }
-    //Запрос с пагинацией, никак не учитывает ситуацию, что между запросами от пользователя список виджетов мог измениться
     @GetMapping("/getWidgetsWithLimit")
     public ResponseEntity<List<Widget>>  getWidgetListSorted(@RequestParam int offset, int limit) {
-        //вернем пустой список, если offset больше количества виджетов
         List<Widget> widgetListSort = db.getWidgetListSorted(offset,limit);
         return ResponseEntity.ok(widgetListSort);
     }
-    //область
     @GetMapping("/getWidgetsByArea")
     public ResponseEntity<List<Widget>>  getWidgetListSorted(@RequestParam int x1, int x2, int y1, int y2) {
         List<Widget> widgetListSort =  db.getWidgetListSorted(x1,x2,y1,y2);

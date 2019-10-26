@@ -102,10 +102,6 @@ public class h2WidgetServiceImplTest {
         Assert.assertNotEquals(3, updateWidget.getWidth());
     }
 
-//    @Test
-//    public void deleteById() {
-//    }
-
     @Test
     public void getWidgetListSorted() {
         //System.out.println("test sorted");

@@ -15,6 +15,7 @@ public class SimpleRateLimiter {
     private ScheduledExecutorService scheduler;
     private long startSchedulerTime;
     SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
     public static SimpleRateLimiter create(int permits, TimeUnit timePeriod) {
         SimpleRateLimiter limiter = new SimpleRateLimiter(permits, timePeriod);
         limiter.schedulePermitReplenishment();
