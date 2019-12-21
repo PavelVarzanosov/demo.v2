@@ -1,20 +1,22 @@
-package com.example.demo.interfaces;
+package com.example.demo.services.widgetService;
 
 import com.example.demo.model.Widget;
+import javassist.NotFoundException;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface IWidgetService {
+
     Widget save(int x, int y, int width, int height, int zIndex);
 
     Widget save(int x,int y,int width,int height);
 
-    Widget findById(UUID id);
+    Widget findById(UUID id) throws NotFoundException;
 
-    Widget updateWidget(Widget widget);
+    Widget updateWidget(Widget widget) throws NotFoundException ;
 
-    void deleteById(UUID  id);
+    void deleteById(UUID  id) throws NotFoundException ;
 
     void deleteAll();
 

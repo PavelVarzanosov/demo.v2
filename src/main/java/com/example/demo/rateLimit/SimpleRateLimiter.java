@@ -14,7 +14,7 @@ public class SimpleRateLimiter {
     private TimeUnit timePeriod;//час, день или минута
     private ScheduledExecutorService scheduler;
     private long startSchedulerTime;
-    SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    private SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     public static SimpleRateLimiter create(int permits, TimeUnit timePeriod) {
         SimpleRateLimiter limiter = new SimpleRateLimiter(permits, timePeriod);
@@ -32,10 +32,6 @@ public class SimpleRateLimiter {
         return semaphore.tryAcquire();
     }
 
-    public void stop() {
-        scheduler.shutdownNow();
-    }
-
     public int getLeftLimit() {
         return semaphore.availablePermits();
     }
@@ -44,13 +40,12 @@ public class SimpleRateLimiter {
         return format.format(new Date(startSchedulerTime + timePeriod.toMillis(1)));
     }
 
-    public void schedulePermitReplenishment() {
+    private void schedulePermitReplenishment() {
         scheduler = Executors.newScheduledThreadPool(1);
         startSchedulerTime = System.currentTimeMillis();
         scheduler.scheduleAtFixedRate(() -> {
             semaphore.release(maxPermits - semaphore.availablePermits());
             startSchedulerTime = System.currentTimeMillis();
         }, 1,1, timePeriod);
-
     }
 }

@@ -1,7 +1,9 @@
 package com.example.demo.rateLimit;
 
-import com.example.demo.model.PropertiesList;
-import com.example.demo.model.Property;
+import com.example.demo.repositories.IRateLimitRepository;
+import com.example.demo.services.rateLimitService.rateLimitServiceImpl.ListRateLimitServiceImpl;
+import com.example.demo.model.RateLimitProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -18,7 +20,9 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter {
 
     @Value("${spring.baseRateLimit}")
     private int limit;
-    private PropertiesList propertiesList = new PropertiesList();
+
+    @Autowired
+    private IRateLimitRepository rateLimitRepository;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -26,34 +30,35 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter {
         if (path == null) {
             return true;
         }
-        Optional<Property> property = propertiesList.getProperties().stream().filter((w) -> w.getPath().equals(path)).findAny();
+
+        Optional<RateLimitProperty> property = rateLimitRepository.getProperties().stream().filter((p) -> p.getPath().equals(path)).findAny();
         SimpleRateLimiter limiter = getRateLimiter(path, property, limit);
         boolean allowRequest = limiter.tryAcquire();
-
         if (!allowRequest) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
         }
-        int limitForPath = (property.isPresent()) ? property.get().getRateLimit(): limit;
+        int limitForPath = property.map(RateLimitProperty::getRateLimit).orElseGet(() -> limit);
+
         response.addHeader("X-RateLimit-Limit", String.valueOf(limitForPath));
         response.addHeader("left-RateLimit-Limit", String.valueOf(limiter.getLeftLimit()));
         response.addHeader("next-Reset-Date", limiter.getNextResetDate());
         return allowRequest;
     }
-    private SimpleRateLimiter getRateLimiter(String path, Optional<Property> property, int limitForPath) {
+
+    private SimpleRateLimiter getRateLimiter(String path, Optional<RateLimitProperty> property, int limitForPath) {
         if (property.isPresent()) {
             return property.get().getRateLimiter();
         } else {
-            //synchronized(path.intern()) {
-            if (property.isPresent()) {
-                return property.get().getRateLimiter();
-            } else  {
-                //если в списке проперти нет такого, то просто отдадим базовый и добавим в список;
-                SimpleRateLimiter rateLimiter = SimpleRateLimiter.create(limitForPath, TimeUnit.MINUTES);
-                Property newProperty = new Property(path, limitForPath, rateLimiter);
-                propertiesList.addProperty(newProperty);
-                return rateLimiter;
+            synchronized(path.intern()) {
+                if (property.isPresent()) {
+                    return property.get().getRateLimiter();
+                } else  {
+                    SimpleRateLimiter rateLimiter = SimpleRateLimiter.create(limitForPath, TimeUnit.MINUTES);
+                    RateLimitProperty newProperty = new RateLimitProperty(path, limitForPath, rateLimiter);
+                    rateLimitRepository.addProperty(newProperty);
+                    return rateLimiter;
+                }
             }
-            //}
         }
     }
 

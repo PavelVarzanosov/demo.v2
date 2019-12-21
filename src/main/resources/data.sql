@@ -1,14 +1,3 @@
--- DROP TABLE IF EXISTS Widget;
---
--- CREATE TABLE Widget (
---   id UUID  PRIMARY KEY,
---   x int NOT NULL,
---   y int NOT NULL,
---   width int NOT NULL,
---   height int NOT NULL,
---   zIndex int NOT NULL,
---   LastDTFormatted TIMESTAMP NOT NULL
--- );
 
 INSERT INTO Widget (ID, X, Y, WIDTH, HEIGHT, Z_INDEX, LAST_FORMATTED_DATE) VALUES
   (RANDOM_UUID(), 10, 10, 30, 10, 5,CURRENT_TIMESTAMP()),
