@@ -2,7 +2,7 @@ package com.example.demo.services.widgetService.widgetServiceImpl;
 
 import com.example.demo.model.Widget;
 import com.example.demo.repositories.IWidgetRepository;
-import com.example.demo.services.widgetService.IWidgetService;
+import com.example.demo.services.IWidgetService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 

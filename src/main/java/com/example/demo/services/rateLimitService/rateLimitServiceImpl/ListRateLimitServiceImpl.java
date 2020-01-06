@@ -2,7 +2,7 @@ package com.example.demo.services.rateLimitService.rateLimitServiceImpl;
 
 import com.example.demo.model.RateLimitProperty;
 import com.example.demo.repositories.IRateLimitRepository;
-import com.example.demo.services.rateLimitService.IRateLimitService;
+import com.example.demo.services.IRateLimitService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -1,7 +1,6 @@
 package com.example.demo.controllers;
 
-import com.example.demo.services.rateLimitService.IRateLimitService;
-import com.example.demo.services.rateLimitService.rateLimitServiceImpl.ListRateLimitServiceImpl;
+import com.example.demo.services.IRateLimitService;
 import com.example.demo.model.RateLimitProperty;
 import com.example.demo.rateLimit.SimpleRateLimiter;
 import javassist.NotFoundException;

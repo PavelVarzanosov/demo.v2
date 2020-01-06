@@ -5,9 +5,9 @@ import com.example.demo.repositories.rateLimitRepositoriesImpl.RateLimitReposito
 import com.example.demo.repositories.widgetRepositoriesImpl.H2WidgetRepository;
 import com.example.demo.repositories.IWidgetRepository;
 import com.example.demo.repositories.widgetRepositoriesImpl.ListWidgetRepository;
-import com.example.demo.services.rateLimitService.IRateLimitService;
+import com.example.demo.services.IRateLimitService;
 import com.example.demo.services.rateLimitService.rateLimitServiceImpl.ListRateLimitServiceImpl;
-import com.example.demo.services.widgetService.IWidgetService;
+import com.example.demo.services.IWidgetService;
 import com.example.demo.services.widgetService.widgetServiceImpl.WidgetServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

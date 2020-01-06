@@ -1,4 +1,4 @@
-package com.example.demo.services.widgetService;
+package com.example.demo.services;
 
 import com.example.demo.model.Widget;
 import javassist.NotFoundException;

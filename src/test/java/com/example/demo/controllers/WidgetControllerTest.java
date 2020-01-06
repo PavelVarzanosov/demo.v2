@@ -2,7 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.Matchers.WidgetMatcher;
 import com.example.demo.model.Widget;
-import com.example.demo.services.widgetService.IWidgetService;
+import com.example.demo.services.IWidgetService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javassist.NotFoundException;
 import org.junit.Before;
