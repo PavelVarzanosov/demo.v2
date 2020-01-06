@@ -14,9 +14,7 @@ public class ListRateLimitServiceImpl implements IRateLimitService {
     private IRateLimitRepository rateLimitRepository;
     private final Object lock = new Object();
 
-    public ListRateLimitServiceImpl(){
-
-    }
+    public ListRateLimitServiceImpl(){}
 
     public void addOrUpdateProperty(RateLimitProperty prop) throws NotFoundException {
         RateLimitProperty rateLimitProperty = null;

@@ -12,6 +12,16 @@ public class ListWidgetRepository implements IWidgetRepository {
     private CopyOnWriteArrayList<Widget> widgetList;
     private final Object lock = new Object();
 
+    public ListWidgetRepository(){
+        widgetList = new CopyOnWriteArrayList<>();
+        Widget widget1 = new Widget(10,10,10,10,10, new Date());
+        Widget widget2 = new Widget(20,20,10,10,20, new Date());
+        Widget widget3 = new Widget(30,30,10,10,30, new Date());
+        widgetList.add(widget1);
+        widgetList.add(widget2);
+        widgetList.add(widget3);
+    }
+
     public Widget save(Widget widget) {
         widgetList.add(widget);
         return widget;

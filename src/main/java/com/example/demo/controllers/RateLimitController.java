@@ -18,9 +18,7 @@ public class RateLimitController {
     @Autowired
     private IRateLimitService rateLimitService;
 
-    public RateLimitController() {
-
-    }
+    public RateLimitController() {}
 
     @PostMapping("/addOrUpdateRateLimit")
     public ResponseEntity<RateLimitProperty> addOrUpdateRateLimit(@RequestParam String contextPath, int rateLimit ) {

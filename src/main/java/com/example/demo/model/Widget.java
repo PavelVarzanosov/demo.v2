@@ -29,9 +29,7 @@ public class Widget implements Serializable {
     @Column(name = "LAST_FORMATTED_DATE", nullable = false)
     private Date lastFormattedDate;
 
-    public Widget (){
-
-    }
+    public Widget (){}
 
     public Widget (@JsonProperty("x") int x,
                    @JsonProperty("y") int y,
